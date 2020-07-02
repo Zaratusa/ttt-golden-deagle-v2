@@ -124,7 +124,12 @@ function SWEP:PrimaryAttack()
 
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if (IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self) then
-					if ((!TTT2 and ((ent.GetTeam and ent:GetTeam() == owner:GetTeam()) or (!ent.GetTeam and GetTeam(ent) == GetTeam(owner)))) or (TTT2 and ent:IsInTeam(owner))) then
+					if ((TTT2 and ent:GetTeam() == TEAM_TRAITOR) or (!TTT2 and ent:GetTraitor())) then
+						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
+						dmginfo:ScaleDamage(270) -- deals 9990 damage
+
+						return false -- one hit the traitor
+					elseif ((TTT2 and ent:IsInTeam(owner)) or (!TTT2 and ((ent.GetTeam and ent:GetTeam() == owner:GetTeam()) or (!ent.GetTeam and ent:GetRole() == owner:GetRole())))) then
 						local newdmg = DamageInfo()
 						newdmg:SetDamage(9990)
 						newdmg:SetAttacker(owner)
@@ -136,12 +141,7 @@ function SWEP:PrimaryAttack()
 						owner:TakeDamageInfo(newdmg)
 
 						return true -- block all damage on the target
-					else
-						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
-						dmginfo:ScaleDamage(270) -- deals 9990 damage
 					end
-				else
-					hook.Remove("EntityTakeDamage", title)
 				end
 			end)
 
