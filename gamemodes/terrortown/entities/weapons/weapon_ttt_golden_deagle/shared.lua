@@ -92,7 +92,46 @@ SWEP.IsSilent = false
 -- If NoSights is true, the weapon won't have ironsights
 SWEP.NoSights = false
 
--- precache sounds
+-- support for TTT Custom Roles
+local function IsInnocentRole(role)
+	return (ROLE_INNOCENT and role == ROLE_INNOCENT)
+		or (ROLE_DETECTIVE and role == ROLE_DETECTIVE)
+		or (ROLE_MERCENARY and role == ROLE_MERCENARY)
+		or (ROLE_PHANTOM and role == ROLE_PHANTOM)
+		or (ROLE_GLITCH and role == ROLE_GLITCH)
+end
+
+-- support for TTT Custom Roles
+local function IsTraitorRole(role)
+	return (ROLE_TRAITOR and role == ROLE_TRAITOR)
+		or (ROLE_ASSASSIN and role == ROLE_ASSASSIN)
+		or (ROLE_HYPNOTIST and role == ROLE_HYPNOTIST)
+		or (ROLE_ZOMBIE and role == ROLE_ZOMBIE)
+		or (ROLE_VAMPIRE and role == ROLE_VAMPIRE)
+		or (ROLE_KILLER and role == ROLE_KILLER)
+end
+
+local function IsInTraitorTeam(ply)
+	if (TTT2) then -- support for TTT2
+		return ply:GetTeam() == TEAM_TRAITOR;
+	else
+		return IsTraitorRole(ply:GetRole())
+	end
+end
+
+local function AreTeamMates(ply1, ply2)
+	if (TTT2) then -- support for TTT2
+		return ply1:IsInTeam(ply2)
+	else
+		if (ply1.GetTeam and ply2.GetTeam) then -- support for TTT Totem
+			return ply1:GetTeam() == ply2:GetTeam()
+		else
+			return IsInnocentRole(ply1:GetRole()) == IsInnocentRole(ply2:GetRole()) or IsTraitorRole(ply1:GetRole()) == IsTraitorRole(ply2:GetRole())
+		end
+	end
+end
+
+-- Precache sounds
 function SWEP:Precache()
 	util.PrecacheSound("Golden_Deagle.Single")
 end
@@ -133,12 +172,12 @@ function SWEP:PrimaryAttack()
 
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if (IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self) then
-					if ((TTT2 and ent:GetTeam() == TEAM_TRAITOR) or (!TTT2 and ent:GetTraitor())) then
+					if (IsInTraitorTeam(ent)) then
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 
 						return false -- one hit the traitor
-					elseif ((TTT2 and ent:IsInTeam(owner)) or (!TTT2 and ((ent.GetTeam and ent:GetTeam() == owner:GetTeam()) or (!ent.GetTeam and ent:GetRole() == owner:GetRole())))) then
+					elseif (AreTeamMates(owner, ent)) then
 						local newdmg = DamageInfo()
 						newdmg:SetDamage(9990)
 						newdmg:SetAttacker(owner)
@@ -179,5 +218,6 @@ function SWEP:Holster()
 			vm:StopParticles()
 		end
 	end
+
 	return true
 end
