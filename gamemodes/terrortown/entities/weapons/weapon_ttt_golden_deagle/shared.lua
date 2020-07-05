@@ -8,6 +8,18 @@ SWEP.Contact = "http://steamcommunity.com/profiles/76561198032479768"
 if SERVER then
 	AddCSLuaFile()
 	resource.AddWorkshop("637848943")
+
+	-- Target kill modes
+	-- 0: Kill when shot player is in the traitor team
+	-- 1: Kill when shot player is an opponent
+	-- 2: Kill when shot player is a traitor or an opponent
+	CreateConVar("ttt_golden_deagle_kill_mode", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "When should the Golden Deagle kill the target?", 0, 2)
+
+	-- Shooter suicide modes
+	-- 0: Suicide when shot player is in the innocent team
+	-- 1: Suicide when shot player is in same team
+	-- 2: Suicide when shot player is not a traitor
+	CreateConVar("ttt_golden_deagle_suicide_mode", 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, "When should the Golden Deagle suicide the shooter?", 0, 2)
 else
 	LANG.AddToLanguage("english", "golden_deagle_name", "Golden Deagle")
 	LANG.AddToLanguage("english", "golden_deagle_desc", "Shoot a traitor, kill a traitor.\nShoot an innocent or detective, kill yourself.\nBe careful.")
@@ -119,6 +131,14 @@ local function IsInTraitorTeam(ply)
 	end
 end
 
+local function IsInInnocentTeam(ply)
+	if (TTT2) then  -- support for TTT2
+		return ply:GetTeam() == TEAM_INNOCENT
+	else
+		return IsInnocentRole(ply:GetRole())
+	end
+end
+
 local function AreTeamMates(ply1, ply2)
 	if (TTT2) then -- support for TTT2
 		return ply1:IsInTeam(ply2)
@@ -172,12 +192,15 @@ function SWEP:PrimaryAttack()
 
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if (IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self) then
-					if (IsInTraitorTeam(ent)) then
+					local killMode = GetConVar("ttt_golden_deagle_kill_mode"):GetInt()
+					local suicideMode = GetConVar("ttt_golden_deagle_suicide_mode"):GetInt()
+
+					if (((killMode == 0 or killMode == 2) and IsInTraitorTeam(ent)) or ((killMode == 1 or killMode == 2) and !AreTeamMates(owner, ent))) then
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 
 						return false -- one hit the traitor
-					elseif (AreTeamMates(owner, ent)) then
+					elseif ((suicideMode == 0 and IsInInnocentTeam(ent)) or (suicideMode == 1 and AreTeamMates(owner, ent)) or suicideMode == 2) then
 						local newdmg = DamageInfo()
 						newdmg:SetDamage(9990)
 						newdmg:SetAttacker(owner)
