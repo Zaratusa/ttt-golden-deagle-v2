@@ -5,6 +5,9 @@ SWEP.Contact = "http://steamcommunity.com/profiles/76561198032479768"
 -- team fixes "Alf21"
 -- contact "http://steamcommunity.com/profiles/76561198049831089"
 
+local defaultClipSize = CreateConVar("ttt_golden_deagle_bullets", 2, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Amount of bullets you receive, when you buy a Golden Deagle.", 1)
+local clipSize = CreateConVar("ttt_golden_deagle_max_bullets", 2, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Maximum magazine size of the Golden Deagle.", 1)
+
 if SERVER then
 	AddCSLuaFile()
 	resource.AddWorkshop("637848943")
@@ -62,8 +65,8 @@ SWEP.Primary.Recoil = 6
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 37
 SWEP.Primary.Automatic = false
-SWEP.Primary.ClipSize = 2
-SWEP.Primary.DefaultClip = 2
+SWEP.Primary.DefaultClip = defaultClipSize:GetInt()
+SWEP.Primary.ClipSize = clipSize:GetInt()
 SWEP.Primary.Sound = Sound("Golden_Deagle.Single")
 
 --[[Model settings]]--
