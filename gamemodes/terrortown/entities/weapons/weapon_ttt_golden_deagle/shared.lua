@@ -196,7 +196,7 @@ function SWEP:PrimaryAttack()
 					local killMode = GetConVar("ttt_golden_deagle_kill_mode"):GetInt()
 					local suicideMode = GetConVar("ttt_golden_deagle_suicide_mode"):GetInt()
 
-					if (((killMode == 0 or killMode == 2) and IsInTraitorTeam(ent)) or ((killMode == 1 or killMode == 2) and not AreTeamMates(owner, ent))) then
+					if ((TTT2 and owner:HasEquipmentItem("item_ttt_golden_bullet")) or ((killMode == 0 or killMode == 2) and IsInTraitorTeam(ent)) or ((killMode == 1 or killMode == 2) and not AreTeamMates(owner, ent))) then
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 
