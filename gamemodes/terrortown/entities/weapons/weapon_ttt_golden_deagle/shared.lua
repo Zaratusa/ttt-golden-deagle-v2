@@ -200,6 +200,10 @@ function SWEP:PrimaryAttack()
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 
+						if (TTT2) then
+							owner:RemoveEquipmentItem("item_ttt_golden_bullet")
+						end
+
 						return false -- one hit the traitor
 					elseif ((suicideMode == 0 and IsInInnocentTeam(ent)) or (suicideMode == 1 and AreTeamMates(owner, ent)) or suicideMode == 2) then
 						local newdmg = DamageInfo()
