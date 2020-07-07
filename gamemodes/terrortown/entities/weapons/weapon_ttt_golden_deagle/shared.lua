@@ -196,7 +196,7 @@ function SWEP:PrimaryAttack()
 					local killMode = GetConVar("ttt_golden_deagle_kill_mode"):GetInt()
 					local suicideMode = GetConVar("ttt_golden_deagle_suicide_mode"):GetInt()
 
-					if (((killMode == 0 or killMode == 2) and IsInTraitorTeam(ent)) or ((killMode == 1 or killMode == 2) and !AreTeamMates(owner, ent))) then
+					if (((killMode == 0 or killMode == 2) and IsInTraitorTeam(ent)) or ((killMode == 1 or killMode == 2) and not AreTeamMates(owner, ent))) then
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 
@@ -223,7 +223,7 @@ function SWEP:PrimaryAttack()
 		self:ShootBullet(self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self:GetPrimaryCone())
 		self:TakePrimaryAmmo(1)
 
-		if (IsValid(owner) and !owner:IsNPC() and owner.ViewPunch) then
+		if (IsValid(owner) and not owner:IsNPC() and owner.ViewPunch) then
 			owner:ViewPunch(Angle(math.Rand(-0.2,-0.1) * self.Primary.Recoil, math.Rand(-0.1,0.1) * self.Primary.Recoil, 0))
 		end
 
