@@ -10,7 +10,6 @@ local clipSize = CreateConVar("ttt_golden_deagle_max_bullets", 2, {FCVAR_SERVER_
 
 if SERVER then
 	AddCSLuaFile()
-	resource.AddWorkshop("637848943")
 
 	-- Target kill modes
 	-- 0: Kill when shot player is in the traitor team
@@ -47,9 +46,8 @@ else
 
 	hook.Add("TTT2ScoreboardAddPlayerRow", "ZaratusasTTTMod", function(ply)
 		local ID64 = ply:SteamID64()
-		local ID64String = tostring(ID64)
 
-		if (ID64String == "76561198032479768") then
+		if (ID64 == "76561198032479768") then
 			AddTTT2AddonDev(ID64)
 		end
 	end)
