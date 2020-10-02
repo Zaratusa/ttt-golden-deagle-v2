@@ -28,6 +28,9 @@ else
 
 	LANG.AddToLanguage("Deutsch", "golden_deagle_name", "Goldene Deagle")
 	LANG.AddToLanguage("Deutsch", "golden_deagle_desc", "Schieße auf einen Spieler eines anderen Teams, um ihn direkt zu töten.\nSchieße auf deine Mates, um dich selbst zu töten.\nSei vorsichtig!")
+	
+	LANG.AddToLanguage("Русский", "golden_deagle_name", "Золотой Deagle")
+	LANG.AddToLanguage("Русский", "golden_deagle_desc", "Расстрелять предателя, убить предателя.\nРасстрелять невиновного или детектива, убить себя.\nБудьте осторожны.")
 
 	SWEP.PrintName = "golden_deagle_name"
 	SWEP.Slot = 6
